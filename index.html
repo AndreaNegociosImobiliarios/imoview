@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imoview — Documentação</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --surface:#ffffff; --surface-2:#f9fafb;
+    --border:#e3e6ea; --text:#1b1f24; --text-muted:#5b6472; --text-faint:#8a929e;
+    --accent:#2f5cff; --accent-soft:#eaeeff; --accent-text:#1e40d8;
+    --shadow:0 1px 2px rgba(16,24,40,.05), 0 8px 24px -12px rgba(16,24,40,.12);
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    font-size:15px; line-height:1.65; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:960px; margin:0 auto; padding:64px 24px 80px}
+  .brand{display:flex; align-items:center; gap:12px; margin-bottom:34px}
+  .brand-mark{
+    width:44px;height:44px;border-radius:11px;
+    background:linear-gradient(135deg,var(--accent),#7c3aed);
+    display:grid;place-items:center;color:#fff;font-weight:700;font-size:16px;letter-spacing:.5px;
+  }
+  .brand strong{display:block; font-size:19px; letter-spacing:-.2px; line-height:1.2}
+  .brand span{display:block; font-size:12.5px; color:var(--text-faint)}
+  h1{font-size:40px; letter-spacing:-1px; line-height:1.15; margin:0 0 14px; font-weight:700}
+  .lead{color:var(--text-muted); font-size:16.5px; max-width:62ch; margin:0 0 38px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px}
+  a.card{
+    display:block; text-decoration:none; color:var(--text);
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 22px 20px; box-shadow:var(--shadow); transition:transform .15s, box-shadow .15s, border-color .15s;
+  }
+  a.card:hover{transform:translateY(-3px); border-color:var(--accent)}
+  .card .badge{
+    display:inline-grid; place-items:center; width:40px; height:40px; border-radius:10px;
+    color:#fff; font-weight:700; font-size:11px; letter-spacing:.4px; margin-bottom:14px;
+  }
+  .b-pos{background:linear-gradient(135deg,#2f5cff,#4f7cff)}
+  .b-crm{background:linear-gradient(135deg,#0d9488,#14b8a6)}
+  .b-adm{background:linear-gradient(135deg,#7c3aed,#a855f7)}
+  .card h2{margin:0 0 6px; font-size:17px; letter-spacing:-.2px}
+  .card p{margin:0; color:var(--text-muted); font-size:13.8px}
+  .all{margin-top:18px}
+  .all a{
+    display:inline-flex; align-items:center; gap:8px; text-decoration:none;
+    padding:12px 20px; border-radius:10px; font-weight:650; font-size:14px;
+    background:var(--accent); color:#fff; transition:opacity .15s;
+  }
+  .all a:hover{opacity:.9}
+  footer{margin-top:56px; padding-top:18px; border-top:1px solid var(--border); color:var(--text-faint); font-size:12.5px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-mark">IM</div>
+      <div>
+        <strong>Imoview</strong>
+        <span>Levantamento de módulos</span>
+      </div>
+    </div>
+
+    <h1>Bem-vindo à documentação do Imoview</h1>
+    <p class="lead">Aqui você encontra o levantamento funcional dos módulos do sistema Imoview, com especificações, fluxos e parâmetros de cada área.</p>
+
+    <div class="grid">
+      <a class="card" href="pos.html">
+        <span class="badge b-pos">PÓS</span>
+        <h2>Pós-venda</h2>
+        <p>Módulos de pós-venda e acompanhamento pós-negócio.</p>
+      </a>
+      <a class="card" href="crm.html">
+        <span class="badge b-crm">CRM</span>
+        <h2>CRM</h2>
+        <p>Relacionamento com o cliente · Imóveis e atendimento.</p>
+      </a>
+      <a class="card" href="adm.html">
+        <span class="badge b-adm">ADM</span>
+        <h2>ADM</h2>
+        <p>Administração e configurações do sistema.</p>
+      </a>
+    </div>
+
+    <div class="all">
+      <a href="parametros.html">Ver visão completa &rarr;</a>
+    </div>
+
+    <footer>Imoview · Documentação gerada a partir de <b>db/Levantamento.docx</b>.</footer>
+  </div>
+</body>
+</html>
