@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imoview — Parâmetros CRM</title>
+
+<style>
+  :root{
+    --bg:#f6f7f9;
+    --surface:#ffffff;
+    --surface-2:#f9fafb;
+    --border:#e3e6ea;
+    --border-strong:#cfd4da;
+    --text:#1b1f24;
+    --text-muted:#5b6472;
+    --text-faint:#8a929e;
+    --accent:#2f5cff;
+    --accent-soft:#eaeeff;
+    --accent-text:#1e40d8;
+    --warn:#b45309;
+    --warn-soft:#fef4e6;
+    --warn-border:#f3d3a8;
+    --success:#087f5b;
+    --success-soft:#e7f8f1;
+    --code-bg:#eef1f5;
+    --shadow:0 1px 2px rgba(16,24,40,.05),
+             0 8px 24px -12px rgba(16,24,40,.12);
+    --radius:12px;
+    --sidebar-w:300px;
+  }
+
+  html[data-theme="dark"]{
+    --bg:#0e1116;
+    --surface:#161b22;
+    --surface-2:#1b2129;
+    --border:#252c35;
+    --border-strong:#333c48;
+    --text:#e6eaf0;
+    --text-muted:#a3adbb;
+    --text-faint:#78828f;
+    --accent:#7d97ff;
+    --accent-soft:#1b2540;
+    --accent-text:#a9bcff;
+    --warn:#f0b357;
+    --warn-soft:#2a2115;
+    --warn-border:#4a3a1e;
+    --success:#46d3a0;
+    --success-soft:#123126;
+    --code-bg:#1f2630;
+    --shadow:0 1px 2px rgba(0,0,0,.4),
+             0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box}
+
+  html{
+    scroll-behavior:smooth;
+    scroll-padding-top:24px;
+  }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    font-size:15px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* =========================
+     LAYOUT
+  ========================= */
+
+  .layout{
+    display:flex;
+    min-height:100vh;
+  }
+
+  /* =========================
+     SIDEBAR
+  ========================= */
+
+  .sidebar{
+    width:var(--sidebar-w);
+    flex:0 0 var(--sidebar-w);
+    background:var(--surface);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    position:sticky;
+    top:0;
+    height:100vh;
+    z-index:40;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:18px 20px 14px;
+    border-bottom:1px solid var(--border);
+  }
+
+  .brand-mark{
+    width:32px;
+    height:32px;
+    border-radius:9px;
+    background:linear-gradient(135deg,var(--accent),#7c3aed);
+    display:grid;
+    place-items:center;
+    color:#fff;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.5px;
+  }
+
+  .brand-text strong{
+    display:block;
+    font-size:15px;
+    line-height:1.2;
+  }
+
+  .brand-text span{
+    display:block;
+    font-size:11.5px;
+    color:var(--text-faint);
+  }
+
+  .search-wrap{
+    padding:12px 14px;
+    border-bottom:1px solid var(--border);
+  }
+
+  .search-box{
+    position:relative;
+  }
+
+  #search{
+    width:100%;
+    padding:9px 30px 9px 13px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:9px;
+    color:var(--text);
+    font-size:13.5px;
+    outline:none;
+  }
+
+  #search:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+
+  .search-clear{
+    position:absolute;
+    right:8px;
+    top:50%;
+    transform:translateY(-50%);
+    background:none;
+    border:0;
+    cursor:pointer;
+    color:var(--text-faint);
+    font-size:17px;
+    display:none;
+  }
+
+  .search-clear.show{
+    display:block;
+  }
+
+  .nav{
+    flex:1;
+    overflow-y:auto;
+    padding:10px;
+  }
+
+  .nav details{
+    border-radius:10px;
+  }
+
+  .nav summary{
+    list-style:none;
+    cursor:pointer;
+    padding:9px 10px;
+    border-radius:9px;
+    font-weight:650;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    color:var(--text-muted);
+  }
+
+  .nav summary::-webkit-details-marker{
+    display:none;
+  }
+
+  .nav summary:hover{
+    background:var(--surface-2);
+    color:var(--text);
+  }
+
+  .nav-tree{
+    list-style:none;
+    margin:2px 0 10px;
+    padding-left:10px;
+    border-left:1px solid var(--border);
+    margin-left:11px;
+  }
+
+  .nav-tree a{
+    display:block;
+    padding:6px 10px;
+    margin:1px 0 1px -11px;
+    border-radius:7px;
+    border-left:2px solid transparent;
+    color:var(--text-muted);
+    text-decoration:none;
+    font-size:13.5px;
+  }
+
+  .nav-tree a:hover{
+    background:var(--surface-2);
+    color:var(--text);
+  }
+
+  .nav-tree a.active{
+    background:var(--accent-soft);
+    color:var(--accent-text);
+    font-weight:600;
+    border-left-color:var(--accent);
+  }
+
+  /* =========================
+     TOPBAR
+  ========================= */
+
+  .topbar{
+    display:none;
+    position:sticky;
+    top:0;
+    z-index:35;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    padding:10px 14px;
+    align-items:center;
+    gap:10px;
+  }
+
+  .icon-btn{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    width:36px;
+    height:36px;
+    border-radius:9px;
+    cursor:pointer;
+    display:grid;
+    place-items:center;
+  }
+
+  .topbar .title{
+    font-weight:650;
+    font-size:14.5px;
+  }
+
+  /* =========================
+     CONTENT
+  ========================= */
+
+  .content{
+    flex:1;
+    min-width:0;
+    padding:36px 40px 120px;
+  }
+
+  .inner{
+    max-width:940px;
+    margin:0 auto;
+  }
+
+  .page-head{
+    margin-bottom:34px;
+  }
+
+  .page-head .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    font-size:11.5px;
+    font-weight:650;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color:var(--accent-text);
+    background:var(--accent-soft);
+    padding:4px 11px;
+    border-radius:20px;
+    margin-bottom:14px;
+  }
+
+  .page-head h1{
+    font-size:34px;
+    line-height:1.15;
+    letter-spacing:-.8px;
+    margin:0 0 10px;
+  }
+
+  .page-head p{
+    margin:0;
+    color:var(--text-muted);
+    font-size:15.5px;
+    max-width:70ch;
+  }
+
+  /* =========================
+     MODULE
+  ========================= */
+
+  .module{
+    margin-bottom:20px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .module-head{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    padding:18px 24px;
+    border-bottom:1px solid var(--border);
+    background:var(--surface-2);
+  }
+
+  .module-badge{
+    width:38px;
+    height:38px;
+    border-radius:10px;
+    display:grid;
+    place-items:center;
+    font-weight:700;
+    font-size:12px;
+    color:#fff;
+    background:linear-gradient(135deg,#0d9488,#14b8a6);
+  }
+
+  .module-head h2{
+    margin:0;
+    font-size:20px;
+    letter-spacing:-.3px;
+  }
+
+  .module-head .sub{
+    margin:1px 0 0;
+    font-size:12.5px;
+    color:var(--text-faint);
+  }
+
+  .module-body{
+    padding:6px 24px 24px;
+  }
+
+  /* =========================
+     UNITS
+  ========================= */
+
+  .unit{
+    padding-top:24px;
+    scroll-margin-top:20px;
+  }
+
+  .unit + .unit{
+    border-top:1px solid var(--border);
+    margin-top:24px;
+  }
+
+  .unit h3{
+    font-size:17px;
+    margin:0 0 12px;
+    font-weight:650;
+  }
+
+  .unit h4{
+    font-size:13px;
+    margin:18px 0 8px;
+    font-weight:650;
+    color:var(--text-muted);
+    text-transform:uppercase;
+    letter-spacing:.6px;
+  }
+
+  p{
+    margin:0 0 12px;
+  }
+
+  .lead{
+    color:var(--text-muted);
+  }
+
+  /* =========================
+     PARAMETER CARD
+  ========================= */
+
+  .parameter{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px 17px;
+    margin-bottom:12px;
+  }
+
+  .parameter-title{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-bottom:7px;
+  }
+
+  .parameter-title strong{
+    font-size:14.5px;
+  }
+
+  .parameter-desc{
+    color:var(--text-muted);
+    font-size:14px;
+  }
+
+  .parameter-example{
+    margin-top:10px;
+    padding:10px 12px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:13.5px;
+  }
+
+  .parameter-example strong{
+    color:var(--text);
+  }
+
+  /* =========================
+     STATUS
+  ========================= */
+
+  .status{
+    display:inline-block;
+    font-size:11px;
+    font-weight:650;
+    padding:2px 8px;
+    border-radius:20px;
+    vertical-align:middle;
+  }
+
+  .status.ok{
+    background:var(--success-soft);
+    color:var(--success);
+  }
+
+  .status.pending{
+    background:var(--warn-soft);
+    color:var(--warn);
+  }
+
+  /* =========================
+     NOTE
+  ========================= */
+
+  .note{
+    border-left:3px solid var(--warn);
+    background:var(--warn-soft);
+    border-radius:0 9px 9px 0;
+    padding:12px 15px;
+    margin:12px 0;
+    font-size:13.6px;
+  }
+
+  .note b{
+    color:var(--warn);
+  }
+
+  /* =========================
+     FLOW
+  ========================= */
+
+  .flow{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:7px;
+    margin:14px 0;
+  }
+
+  .flow-step{
+    background:var(--accent-soft);
+    color:var(--accent-text);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:7px 10px;
+    font-size:13px;
+    font-weight:600;
+  }
+
+  .arrow{
+    color:var(--text-faint);
+  }
+
+  /* =========================
+     TABLE
+  ========================= */
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:12px 0 16px;
+    font-size:13.5px;
+  }
+
+  th,td{
+    padding:9px 10px;
+    border:1px solid var(--border);
+    text-align:left;
+  }
+
+  th{
+    background:var(--surface-2);
+    font-weight:650;
+  }
+
+  td{
+    color:var(--text-muted);
+  }
+
+  /* =========================
+     FOOTER
+  ========================= */
+
+  .foot{
+    margin-top:34px;
+    padding-top:20px;
+    border-top:1px solid var(--border);
+    color:var(--text-faint);
+    font-size:12.5px;
+  }
+
+  /* =========================
+     RESPONSIVE
+  ========================= */
+
+  @media(max-width:1000px){
+
+    .sidebar{
+      position:fixed;
+      left:0;
+      top:0;
+      bottom:0;
+      transform:translateX(-100%);
+      transition:transform .24s ease;
+      box-shadow:0 0 40px rgba(0,0,0,.18);
+    }
+
+    .sidebar.open{
+      transform:translateX(0);
+    }
+
+    .topbar{
+      display:flex;
+    }
+
+    .content{
+      padding:22px 18px 90px;
+    }
+
+    .page-head h1{
+      font-size:27px;
+    }
+
+    .module-body{
+      padding:6px 16px 20px;
+    }
+
+    .module-head{
+      padding:15px 16px;
+    }
+  }
+
+  @media print{
+
+    .sidebar,
+    .topbar{
+      display:none !important;
+    }
+
+    .content{
+      padding:0;
+    }
+
+    .module{
+      box-shadow:none;
+      break-inside:avoid;
+    }
+
+    body{
+      background:#fff;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+  <!-- =========================
+       SIDEBAR
+  ========================= -->
+
+  <aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+      <div class="brand-mark">IM</div>
+
+      <div class="brand-text">
+        <strong>Imoview</strong>
+        <span>Levantamento de parâmetros</span>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search-box">
+        <input
+          id="search"
+          type="search"
+          placeholder="Buscar parâmetro…"
+          autocomplete="off"
+        >
+
+        <button
+          class="search-clear"
+          id="searchClear"
+          aria-label="Limpar busca"
+        >
+          &times;
+        </button>
+      </div>
+    </div>
+
+    <nav class="nav">
+
+      <details open>
+
+        <summary>CRM</summary>
+
+        <ul class="nav-tree">
+
+          <li>
+            <a href="#avaliacao">
+              Avaliação do imóvel
+            </a>
+          </li>
+
+          <li>
+            <a href="#atualizacao">
+              Atualização do imóvel
+            </a>
+          </li>
+
+          <li>
+            <a href="#lancamento">
+              Atualização do lançamento
+            </a>
+          </li>
+
+          <li>
+            <a href="#interacao">
+              Interação do atendimento
+            </a>
+          </li>
+
+          <li>
+            <a href="#primeira-resposta">
+              Primeira resposta
+            </a>
+          </li>
+
+          <li>
+            <a href="#repique">
+              Repique
+            </a>
+          </li>
+
+        </ul>
+
+      </details>
+
+    </nav>
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN
+  ========================= -->
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+    <div class="topbar">
+
+      <button
+        class="icon-btn"
+        id="menuBtn"
+        aria-label="Abrir menu"
+      >
+        ☰
+      </button>
+
+      <div class="title">
+        Imoview — Parâmetros CRM
+      </div>
+
+    </div>
+
+
+    <main class="content">
+
+      <div class="inner">
+
+        <!-- =========================
+             HEADER
+        ========================= -->
+
+        <header class="page-head">
+
+          <span class="eyebrow">
+            Especificação funcional
+          </span>
+
+          <h1>Parâmetros CRM</h1>
+
+          <p>
+            Documentação dos parâmetros relacionados à avaliação de imóveis,
+            atualização de imóveis, interação com leads e distribuição de
+            atendimentos.
+          </p>
+
+        </header>
+
+
+        <!-- =========================
+             MODULE
+        ========================= -->
+
+        <section class="module">
+
+          <div class="module-head">
+
+            <div class="module-badge">
+              CRM
+            </div>
+
+            <div>
+
+              <h2>Parâmetros</h2>
+
+              <p class="sub">
+                Configurações e regras identificadas no sistema
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="module-body">
+
+
+            <!-- =========================
+                 AVALIAÇÃO
+            ========================= -->
+
+            <section
+              class="unit"
+              id="avaliacao"
+              data-search
+            >
+
+              <h3>
+                Avaliação imóvel — Aluguel ou Venda
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Faixas de avaliação
+                  </strong>
+
+                  <span class="status ok">
+                    Compreendido
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  <p>
+                    Serve para classificar uma avaliação de imóvel em
+                    diferentes faixas de percentual, conforme a diferença
+                    entre o valor considerado como referência e o valor
+                    apresentado na avaliação.
+                  </p>
+
+                  <p>
+                    O sistema permite configurar faixas para os níveis:
+                    <b>Verde</b>, <b>Amarelo</b> e <b>Vermelho</b>.
+                  </p>
+
+                </div>
+
+
+                <div class="parameter-example">
+
+                  <strong>Exemplo:</strong>
+
+                  <br><br>
+
+                  Valor de referência do aluguel:
+                  <b>R$ 2.000,00</b>
+
+                  <br>
+
+                  Valor resultante da avaliação:
+                  <b>R$ 2.200,00</b>
+
+                  <br><br>
+
+                  Diferença:
+                  <b>R$ 200,00</b>
+
+                  <br>
+
+                  Percentual:
+                  <b>10%</b>
+
+                </div>
+
+              </div>
+
+
+              <h4>Configuração</h4>
+
+              <table>
+
+                <thead>
+                  <tr>
+                    <th>Classificação</th>
+                    <th>De</th>
+                    <th>Até</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  <tr>
+                    <td>Verde</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Amarelo</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Vermelho</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </section>
+
+
+            <!-- =========================
+                 ATUALIZAÇÃO IMÓVEL
+            ========================= -->
+
+            <section
+              class="unit"
+              id="atualizacao"
+              data-search
+            >
+
+              <h3>
+                Atualização imóvel — Aluguel ou Venda
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Tempo desde a última atualização
+                  </strong>
+
+                  <span class="status ok">
+                    Compreendido
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  Define a classificação do imóvel de acordo com a
+                  quantidade de <b>dias desde a última atualização das
+                  informações do imóvel</b>.
+
+                  <br><br>
+
+                  O parâmetro utiliza as faixas:
+
+                  <b>Verde</b>,
+                  <b>Amarelo</b> e
+                  <b>Vermelho</b>.
+
+                </div>
+
+              </div>
+
+
+              <h4>Exemplo de funcionamento</h4>
+
+              <div class="flow">
+
+                <span class="flow-step">
+                  Última atualização
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Contagem de dias
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Classificação
+                </span>
+
+              </div>
+
+              <p class="lead">
+                Quanto maior o tempo desde a atualização do imóvel,
+                maior poderá ser a necessidade de revisão das informações,
+                conforme as faixas configuradas pela imobiliária.
+              </p>
+
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Classificação</th>
+                    <th>De</th>
+                    <th>Até</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <tr>
+                    <td>Verde</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Amarelo</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Vermelho</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </section>
+
+
+            <!-- =========================
+                 LANÇAMENTO
+            ========================= -->
+
+            <section
+              class="unit"
+              id="lancamento"
+              data-search
+            >
+
+              <h3>
+                Atualização lançamento — dias
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Atualização de lançamento
+                  </strong>
+
+                  <span class="status pending">
+                    Pendente
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  <p>
+                    Este parâmetro aparece configurado em dias e possui
+                    faixas de classificação semelhantes às utilizadas
+                    para atualização de imóveis.
+                  </p>
+
+                  <p>
+                    Porém, no levantamento atual, ainda não foi identificado
+                    exatamente <b>qual informação do lançamento é utilizada
+                    para iniciar a contagem dos dias</b>.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="note">
+
+                <b>Ponto a validar:</b>
+
+                Não foi possível determinar se a contagem considera a
+                última atualização do lançamento, alteração de alguma
+                informação específica, atualização de estoque,
+                disponibilidade ou outro evento do cadastro.
+
+              </div>
+
+            </section>
+
+
+            <!-- =========================
+                 INTERAÇÃO
+            ========================= -->
+
+            <section
+              class="unit"
+              id="interacao"
+              data-search
+            >
+
+              <h3>
+                Interação atendimento — Aluguel ou Venda
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Tempo da interação do lead
+                  </strong>
+
+                  <span class="status ok">
+                    Compreendido
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  Define o tempo relacionado às interações realizadas
+                  no atendimento do lead.
+
+                  <br><br>
+
+                  O parâmetro possui faixas em <b>dias</b> e permite
+                  classificar o atendimento conforme o tempo de interação.
+
+                </div>
+
+              </div>
+
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Classificação</th>
+                    <th>De</th>
+                    <th>Até</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <tr>
+                    <td>Verde</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Amarelo</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Vermelho</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </section>
+
+
+            <!-- =========================
+                 PRIMEIRA RESPOSTA
+            ========================= -->
+
+            <section
+              class="unit"
+              id="primeira-resposta"
+              data-search
+            >
+
+              <h3>
+                Tempo de primeira resposta — Aluguel ou Venda
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Tempo do atendente no lead
+                  </strong>
+
+                  <span class="status ok">
+                    Compreendido
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  <p>
+                    Define o tempo máximo esperado para que o atendente
+                    realize a <b>primeira interação com o lead</b>.
+                  </p>
+
+                  <p>
+                    A unidade utilizada é <b>minutos</b>.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="flow">
+
+                <span class="flow-step">
+                  Lead recebido
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Contagem do tempo
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Primeira interação
+                </span>
+
+              </div>
+
+              <div class="note">
+
+                <b>Importante:</b>
+
+                Esse parâmetro está relacionado ao tempo até o
+                primeiro contato/interação do atendente com o lead,
+                e não necessariamente ao tempo total de atendimento.
+
+              </div>
+
+            </section>
+
+
+            <!-- =========================
+                 REPIQUE
+            ========================= -->
+
+            <section
+              class="unit"
+              id="repique"
+              data-search
+            >
+
+              <h3>
+                Repique
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Transferência automática de atendimento
+                  </strong>
+
+                  <span class="status ok">
+                    Funcionamento geral compreendido
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  <p>
+                    O repique é utilizado para transferir automaticamente
+                    um atendimento para outro corretor quando não houver
+                    interação com o lead dentro do tempo configurado.
+                  </p>
+
+                  <p>
+                    A regra considera a ausência de um
+                    <b>primeiro contato</b>, seja por interação ou
+                    atividade registrada no atendimento.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <h4>Funcionamento básico</h4>
+
+              <div class="flow">
+
+                <span class="flow-step">
+                  Lead recebido
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Corretor recebe
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Sem interação
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Tempo limite
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Repique
+                </span>
+
+              </div>
+
+
+              <h4>Exemplo</h4>
+
+              <p>
+                Se o repique estiver configurado para
+                <b>30 minutos</b> e o corretor receber um lead às
+                <b>10:00</b>, caso não seja registrada a primeira
+                interação dentro do período configurado, o sistema
+                poderá realizar o repique para outro corretor elegível.
+              </p>
+
+
+              <h4>Se houver apenas um corretor disponível</h4>
+
+              <div class="note">
+
+                <b>Ponto a validar no sistema:</b>
+
+                Ainda não foi identificado no levantamento qual é o
+                comportamento do Imoview quando existe apenas um corretor
+                elegível/disponível para receber o atendimento.
+
+                <br><br>
+
+                É necessário verificar se, nesse cenário, o sistema:
+
+                <br><br>
+
+                • mantém o atendimento com o mesmo corretor;
+
+                <br>
+
+                • transfere para uma fila/piscina de leads;
+
+                <br>
+
+                • mantém o atendimento sem transferência;
+
+                <br>
+
+                • ou utiliza alguma outra regra de distribuição.
+
+              </div>
+
+
+              <h4>Modos de funcionamento</h4>
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Modo</th>
+                    <th>Funcionamento</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <tr>
+
+                    <td>
+                      <b>Desabilitado</b>
+                    </td>
+
+                    <td>
+                      O repique não é utilizado.
+                    </td>
+
+                  </tr>
+
+                  <tr>
+
+                    <td>
+                      <b>Automático</b>
+                    </td>
+
+                    <td>
+                      Os atendimentos são distribuídos automaticamente
+                      conforme as regras e tempos configurados.
+                    </td>
+
+                  </tr>
+
+                  <tr>
+
+                    <td>
+                      <b>Manual</b>
+                    </td>
+
+                    <td>
+                      O atendimento fica disponível no painel/piscina
+                      para que o corretor faça a atribuição manualmente.
+                    </td>
+
+                  </tr>
+
+                  <tr>
+
+                    <td>
+                      <b>Híbrido</b>
+                    </td>
+
+                    <td>
+                      O sistema realiza as distribuições automáticas
+                      até atingir a quantidade de repiques configurada.
+                      Depois disso, o atendimento fica disponível
+                      para atribuição manual.
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+
+              <h4>Parâmetros relacionados</h4>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    N° de minutos úteis sem interação — Aluguel
+                  </strong>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  Quantidade de minutos úteis que o corretor possui
+                  para realizar a primeira interação antes que a regra
+                  de repique seja acionada.
+
+                </div>
+
+              </div>
+
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    N° de minutos úteis sem interação — Venda
+                  </strong>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  Quantidade de minutos úteis que o corretor possui
+                  para realizar a primeira interação em atendimentos
+                  de venda antes que a regra de repique seja acionada.
+
+                </div>
+
+              </div>
+
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Zerar contagem no dia seguinte
+                  </strong>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  Quando habilitado, caso o tempo restante ultrapasse
+                  o expediente configurado, a contagem é reiniciada
+                  no próximo dia de expediente, a partir do horário
+                  inicial configurado.
+
+                </div>
+
+              </div>
+
+
+              <div class="note">
+
+                <b>Observação do sistema:</b>
+
+                A configuração recomenda que o repique seja utilizado
+                com um período maior quando a imobiliária não possui
+                um setor de pré-atendimento, evitando transferências
+                excessivamente rápidas entre corretores.
+
+              </div>
+
+            </section>
+
+
+          </div>
+
+        </section>
+
+
+        <!-- =========================
+             FOOTER
+        ========================= -->
+
+        <footer class="foot">
+
+          <b>Imoview — Parâmetros CRM</b>
+
+          <br>
+
+          Documento de levantamento e especificação funcional.
+
+          <br>
+
+          <span>
+            Parâmetros marcados como
+            <b>pendentes</b> deverão ser validados diretamente no sistema.
+          </span>
+
+        </footer>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</div>
+
+
+<script>
+
+(function(){
+
+  "use strict";
+
+
+  /* =========================
+     MENU MOBILE
+  ========================= */
+
+  var sidebar = document.getElementById("sidebar");
+  var menuBtn = document.getElementById("menuBtn");
+
+  if(menuBtn){
+
+    menuBtn.addEventListener("click", function(){
+
+      sidebar.classList.toggle("open");
+
+    });
+
+  }
+
+
+  /* =========================
+     BUSCA
+  ========================= */
+
+  var search = document.getElementById("search");
+  var clear = document.getElementById("searchClear");
+
+  var items = Array.prototype.slice.call(
+    document.querySelectorAll("[data-search]")
+  );
+
+
+  function normalize(text){
+
+    return text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g,"");
+
+  }
+
+
+  function runSearch(){
+
+    var query = normalize(search.value.trim());
+
+    clear.classList.toggle(
+      "show",
+      search.value.length > 0
+    );
+
+
+    items.forEach(function(item){
+
+      var content = normalize(item.textContent);
+
+      var found =
+        query === "" ||
+        content.indexOf(query) !== -1;
+
+      item.style.display = found ? "" : "none";
+
+    });
+
+  }
+
+
+  search.addEventListener(
+    "input",
+    runSearch
+  );
+
+
+  clear.addEventListener(
+    "click",
+    function(){
+
+      search.value = "";
+
+      runSearch();
+
+      search.focus();
+
+    }
+  );
+
+
+  /* =========================
+     NAVEGAÇÃO
+  ========================= */
+
+  var links = document.querySelectorAll(
+    '.nav-tree a[href^="#"]'
+  );
+
+
+  links.forEach(function(link){
+
+    link.addEventListener(
+      "click",
+      function(e){
+
+        var id =
+          link.getAttribute("href").substring(1);
+
+        var target =
+          document.getElementById(id);
+
+        if(!target) return;
+
+        e.preventDefault();
+
+        target.scrollIntoView({
+          behavior:"smooth",
+          block:"start"
+        });
+
+        sidebar.classList.remove("open");
+
+      }
+    );
+
+  });
+
+
+  /* =========================
+     SCROLLSPY
+  ========================= */
+
+  var sections =
+    Array.prototype.slice.call(
+      document.querySelectorAll("[data-search]")
+    );
+
+
+  window.addEventListener(
+    "scroll",
+    function(){
+
+      var current = "";
+
+      sections.forEach(function(section){
+
+        var top =
+          section.getBoundingClientRect().top;
+
+        if(top <= 150){
+
+          current = section.id;
+
+        }
+
+      });
+
+
+      links.forEach(function(link){
+
+        link.classList.remove("active");
+
+        if(
+          link.getAttribute("href") ===
+          "#" + current
+        ){
+
+          link.classList.add("active");
+
+        }
+
+      });
+
+    },
+    {passive:true}
+  );
+
+
+})();
+
+</script>
+
+</body>
+</html>

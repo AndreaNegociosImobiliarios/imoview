@@ -1,0 +1,1743 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imoview — CRM</title>
+<style>
+  :root{
+    --bg:#f6f7f9;
+    --surface:#ffffff;
+    --surface-2:#f9fafb;
+    --border:#e3e6ea;
+    --border-strong:#cfd4da;
+    --text:#1b1f24;
+    --text-muted:#5b6472;
+    --text-faint:#8a929e;
+    --accent:#2f5cff;
+    --accent-soft:#eaeeff;
+    --accent-text:#1e40d8;
+    --warn:#b45309;
+    --warn-soft:#fef4e6;
+    --warn-border:#f3d3a8;
+    --code-bg:#eef1f5;
+    --success:#087f5b;
+    --success-soft:#e7f8f1;
+    --shadow:0 1px 2px rgba(16,24,40,.05), 0 8px 24px -12px rgba(16,24,40,.12);
+    --radius:12px;
+    --sidebar-w:300px;
+  }
+  html[data-theme="dark"]{
+    --bg:#0e1116;
+    --surface:#161b22;
+    --surface-2:#1b2129;
+    --border:#252c35;
+    --border-strong:#333c48;
+    --text:#e6eaf0;
+    --text-muted:#a3adbb;
+    --text-faint:#78828f;
+    --accent:#7d97ff;
+    --accent-soft:#1b2540;
+    --accent-text:#a9bcff;
+    --warn:#f0b357;
+    --warn-soft:#2a2115;
+    --warn-border:#4a3a1e;
+    --code-bg:#1f2630;
+    --success:#46d3a0;
+    --success-soft:#123126;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth; scroll-padding-top:24px}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    font-size:15px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Layout ---------- */
+  .layout{display:flex; min-height:100vh}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:var(--sidebar-w);
+    flex:0 0 var(--sidebar-w);
+    background:var(--surface);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    position:sticky;
+    top:0;
+    height:100vh;
+    z-index:40;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    padding:18px 20px 14px;
+    border-bottom:1px solid var(--border);
+  }
+  .brand-mark{
+    width:32px;height:32px;border-radius:9px;
+    background:linear-gradient(135deg,var(--accent),#7c3aed);
+    display:grid;place-items:center;
+    color:#fff;font-weight:700;font-size:13px;letter-spacing:.5px;
+    flex:0 0 auto;
+  }
+  .brand-text strong{display:block;font-size:15px;letter-spacing:-.2px;line-height:1.2}
+  .brand-text span{display:block;font-size:11.5px;color:var(--text-faint);line-height:1.4}
+
+  .search-wrap{padding:12px 14px; border-bottom:1px solid var(--border)}
+  .search-box{position:relative}
+  .search-box svg{
+    position:absolute;left:11px;top:50%;transform:translateY(-50%);
+    width:15px;height:15px;color:var(--text-faint);pointer-events:none
+  }
+  #search{
+    width:100%;padding:9px 30px 9px 33px;
+    background:var(--surface-2);border:1px solid var(--border);
+    border-radius:9px;color:var(--text);font-size:13.5px;font-family:inherit;
+    outline:none;transition:border-color .15s, box-shadow .15s;
+  }
+  #search:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  #search::placeholder{color:var(--text-faint)}
+  .search-clear{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    background:none;border:0;cursor:pointer;color:var(--text-faint);
+    font-size:16px;line-height:1;padding:2px 4px;border-radius:5px;display:none
+  }
+  .search-clear:hover{color:var(--text);background:var(--code-bg)}
+  .search-clear.show{display:block}
+  .search-meta{
+    font-size:11.5px;color:var(--text-faint);
+    padding:8px 2px 0;min-height:16px
+  }
+
+  .nav{
+    flex:1;overflow-y:auto;padding:10px 10px 28px;
+    scrollbar-width:thin;
+  }
+  .nav::-webkit-scrollbar{width:9px}
+  .nav::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:9px;border:3px solid var(--surface)}
+
+  .nav details{border-radius:10px}
+  .nav summary{
+    list-style:none;cursor:pointer;user-select:none;
+    display:flex;align-items:center;gap:9px;
+    padding:9px 10px;border-radius:9px;
+    font-weight:650;font-size:13px;letter-spacing:.4px;text-transform:uppercase;
+    color:var(--text-muted);
+  }
+  .nav summary::-webkit-details-marker{display:none}
+  .nav summary:hover{background:var(--surface-2);color:var(--text)}
+  .nav summary .chev{
+    margin-left:auto;width:14px;height:14px;color:var(--text-faint);
+    transition:transform .18s ease;flex:0 0 auto
+  }
+  .nav details[open] summary .chev{transform:rotate(90deg)}
+  .nav summary .tag{
+    font-size:10.5px;font-weight:600;letter-spacing:0;text-transform:none;
+    color:var(--text-faint);background:var(--code-bg);
+    padding:1px 7px;border-radius:20px;margin-left:auto
+  }
+  .nav details[open] summary .tag{margin-left:0}
+  .nav summary .chev + .tag{margin-left:0}
+
+  .nav-tree{list-style:none;margin:2px 0 10px;padding:0 0 0 10px;border-left:1px solid var(--border);margin-left:11px}
+  .nav-tree a{
+    display:block;padding:6px 10px;margin:1px 0;border-radius:7px;
+    color:var(--text-muted);text-decoration:none;font-size:13.5px;line-height:1.45;
+    border-left:2px solid transparent;margin-left:-11px;padding-left:19px;
+    transition:background .12s,color .12s;
+  }
+  .nav-tree a:hover{background:var(--surface-2);color:var(--text)}
+  .nav-tree a.active{
+    background:var(--accent-soft);color:var(--accent-text);font-weight:600;
+    border-left-color:var(--accent)
+  }
+  .nav-tree a.sub{padding-left:32px;font-size:13px}
+  .nav-tree .children{list-style:none;margin:0 0 4px;padding-left:11px;border-left:1px solid var(--border);margin-left:11px}
+  .nav-empty{font-size:12.5px;color:var(--text-faint);padding:14px 12px}
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    display:none;position:sticky;top:0;z-index:35;
+    background:var(--surface);border-bottom:1px solid var(--border);
+    padding:10px 14px;align-items:center;gap:10px
+  }
+  .icon-btn{
+    background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+    width:36px;height:36px;border-radius:9px;cursor:pointer;
+    display:grid;place-items:center;flex:0 0 auto;transition:background .15s
+  }
+  .icon-btn:hover{background:var(--code-bg)}
+  .icon-btn svg{width:18px;height:18px}
+  .topbar .title{font-weight:650;font-size:14.5px}
+
+  /* ---------- Content ---------- */
+  .content{flex:1;min-width:0;padding:36px 40px 120px}
+  .inner{max-width:940px;margin:0 auto}
+
+  .page-head{margin-bottom:34px}
+  .page-head .eyebrow{
+    display:inline-flex;align-items:center;gap:7px;
+    font-size:11.5px;font-weight:650;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--accent-text);background:var(--accent-soft);
+    padding:4px 11px;border-radius:20px;margin-bottom:14px
+  }
+  .page-head h1{
+    font-size:34px;line-height:1.15;letter-spacing:-.8px;margin:0 0 10px;font-weight:700
+  }
+  .page-head p{margin:0;color:var(--text-muted);font-size:15.5px;max-width:66ch}
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .stat{
+    background:var(--surface);border:1px solid var(--border);border-radius:10px;
+    padding:10px 15px;min-width:112px;box-shadow:var(--shadow)
+  }
+  .stat b{display:block;font-size:20px;line-height:1.2;letter-spacing:-.4px}
+  .stat span{display:block;font-size:11.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+
+  .module{
+    margin:0 0 20px;background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:20px
+  }
+  .module-head{
+    display:flex;align-items:center;gap:13px;
+    padding:18px 24px;border-bottom:1px solid var(--border);
+    background:var(--surface-2)
+  }
+  .module-badge{
+    width:38px;height:38px;border-radius:10px;flex:0 0 auto;
+    display:grid;place-items:center;font-weight:700;font-size:12px;letter-spacing:.4px;color:#fff
+  }
+  .m-pos{background:linear-gradient(135deg,#2f5cff,#4f7cff)}
+  .m-crm{background:linear-gradient(135deg,#0d9488,#14b8a6)}
+  .m-adm{background:linear-gradient(135deg,#7c3aed,#a855f7)}
+  .module-head h2{margin:0;font-size:20px;letter-spacing:-.3px;line-height:1.25}
+  .module-head .sub{margin:1px 0 0;font-size:12.5px;color:var(--text-faint)}
+  .module-body{padding:6px 24px 22px}
+
+  .unit{padding-top:20px;scroll-margin-top:20px}
+  .unit > h3{
+    font-size:15.5px;margin:0 0 10px;font-weight:650;letter-spacing:-.1px;
+    display:flex;align-items:baseline;gap:8px;flex-wrap:wrap
+  }
+  .unit > h3 .anchor{
+    color:var(--text-faint);text-decoration:none;font-weight:400;
+    font-size:13px;opacity:0;transition:opacity .15s
+  }
+  .unit:hover > h3 .anchor{opacity:1}
+  .unit > h4{
+    font-size:13px;margin:16px 0 8px;font-weight:650;
+    color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px
+  }
+
+  p{margin:0 0 12px}
+  p:last-child{margin-bottom:0}
+
+  ul.bullets, ol.steps{margin:0 0 12px;padding-left:0;list-style:none;counter-reset:step}
+  ul.bullets > li{
+    position:relative;padding-left:22px;margin-bottom:7px;color:var(--text-muted)
+  }
+  ul.bullets > li::before{
+    content:"";position:absolute;left:6px;top:10px;
+    width:6px;height:6px;border-radius:50%;background:var(--border-strong)
+  }
+  ul.bullets > li > b, ul.bullets > li > strong{color:var(--text)}
+  ol.steps > li{
+    position:relative;counter-increment:step;
+    padding-left:34px;margin-bottom:9px;color:var(--text-muted)
+  }
+  ol.steps > li::before{
+    content:counter(step);position:absolute;left:0;top:1px;
+    width:23px;height:23px;border-radius:7px;
+    background:var(--accent-soft);color:var(--accent-text);
+    display:grid;place-items:center;font-size:11.5px;font-weight:700
+  }
+  ol.steps > li > b, ol.steps > li > strong{color:var(--text)}
+  ul.bullets ul, ol.steps ul{margin:7px 0 0}
+  ul.bullets li li, ol.steps li li{
+    list-style:none;position:relative;padding-left:18px;margin-bottom:5px;font-size:14.2px
+  }
+  ul.bullets li li::before, ol.steps li li::before{
+    content:"";position:absolute;left:4px;top:9px;
+    width:5px;height:5px;border-radius:1px;background:var(--border-strong);transform:rotate(45deg)
+  }
+
+  /* Field list */
+  .fields{
+    list-style:none;margin:0 0 14px;padding:0;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:8px
+  }
+  .fields li{
+    background:var(--surface-2);border:1px solid var(--border);
+    border-radius:9px;padding:9px 12px
+  }
+  .fields .f-name{
+    display:block;font-weight:650;font-size:13px;color:var(--text);
+    margin-bottom:1px;line-height:1.4
+  }
+  .fields .f-opts{display:block;font-size:12.6px;color:var(--text-muted);line-height:1.5}
+
+  .note{
+    border-left:3px solid var(--warn);
+    background:var(--warn-soft);border-radius:0 9px 9px 0;
+    padding:11px 15px;margin:0 0 14px;
+    font-size:13.6px;color:var(--text)
+  }
+  .note b{color:var(--warn)}
+  .lead{color:var(--text-muted);margin-bottom:12px}
+
+  /* ---------- Parâmetros ---------- */
+  .parameter{
+    background:var(--surface-2);border:1px solid var(--border);
+    border-radius:10px;padding:16px 17px;margin-bottom:12px;
+  }
+  .parameter-title{display:flex;align-items:center;gap:9px;margin-bottom:7px;flex-wrap:wrap}
+  .parameter-title strong{font-size:14.5px}
+  .parameter-desc{color:var(--text-muted);font-size:14px}
+  .parameter-example{
+    margin-top:10px;padding:10px 12px;background:var(--surface);
+    border:1px solid var(--border);border-radius:8px;font-size:13.5px;
+  }
+  .parameter-example strong{color:var(--text)}
+  .status{
+    display:inline-block;font-size:11px;font-weight:650;
+    padding:2px 8px;border-radius:20px;vertical-align:middle;
+  }
+  .status.ok{background:var(--success-soft);color:var(--success)}
+  .status.pending{background:var(--warn-soft);color:var(--warn)}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:14px 0}
+  .flow-step{
+    background:var(--accent-soft);color:var(--accent-text);
+    border:1px solid var(--border);border-radius:8px;
+    padding:7px 10px;font-size:13px;font-weight:600;
+  }
+  .arrow{color:var(--text-faint)}
+  table{width:100%;border-collapse:collapse;margin:12px 0 16px;font-size:13.5px}
+  th,td{padding:9px 10px;border:1px solid var(--border);text-align:left}
+  th{background:var(--surface-2);font-weight:650}
+  td{color:var(--text-muted)}
+
+  .tag{
+    display:inline-block;font-size:11.5px;font-weight:600;
+    background:var(--code-bg);color:var(--text-muted);
+    padding:1px 7px;border-radius:5px;margin:0 1px;
+    border:1px solid var(--border)
+  }
+  .todo{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12.5px;color:var(--warn);background:var(--warn-soft);
+    border:1px dashed var(--warn-border);border-radius:7px;padding:4px 10px
+  }
+
+  .empty-unit{
+    display:flex;align-items:center;gap:9px;
+    color:var(--text-faint);font-size:13.4px;font-style:italic;
+    background:var(--surface-2);border:1px dashed var(--border-strong);
+    border-radius:9px;padding:11px 14px
+  }
+
+  .foot{
+    margin-top:34px;padding-top:20px;border-top:1px solid var(--border);
+    color:var(--text-faint);font-size:12.5px
+  }
+
+  .hidden-by-search{display:none !important}
+  mark{background:#ffe680;color:inherit;border-radius:3px;padding:0 1px}
+  html[data-theme="dark"] mark{background:#7a5c00;color:#fff}
+
+  .scrim{
+    display:none;position:fixed;inset:0;background:rgba(10,14,20,.5);
+    z-index:39;backdrop-filter:blur(2px)
+  }
+  .scrim.show{display:block}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:1000px){
+    .sidebar{
+      position:fixed;left:0;top:0;bottom:0;
+      transform:translateX(-100%);transition:transform .24s ease;
+      box-shadow:0 0 40px rgba(0,0,0,.18)
+    }
+    .sidebar.open{transform:translateX(0)}
+    .topbar{display:flex}
+    .content{padding:22px 18px 90px}
+    .page-head h1{font-size:27px}
+    .module-body{padding:6px 16px 20px}
+    .module-head{padding:15px 16px}
+    .fields{grid-template-columns:1fr}
+  }
+  @media (min-width:1001px){ .hide-desktop{display:none} }
+  @media (max-width:560px){
+    .stats .stat{flex:1 1 calc(50% - 5px);min-width:0}
+  }
+
+  @media print{
+    .sidebar,.topbar,.scrim{display:none !important}
+    .content{padding:0}
+    .module{break-inside:avoid;box-shadow:none}
+    body{background:#fff}
+  }
+
+  /* ---------- Module tabs ---------- */
+  .modtabs{display:flex;gap:6px;padding:12px 14px 10px;border-bottom:1px solid var(--border)}
+  .modtab{
+    flex:1 1 0;text-align:center;padding:7px 4px;border-radius:8px;
+    font-size:12.5px;font-weight:650;letter-spacing:.4px;text-decoration:none;
+    color:var(--text-muted);background:var(--surface-2);border:1px solid var(--border);
+    transition:background .15s,color .15s,border-color .15s
+  }
+  .modtab:hover{background:var(--code-bg);color:var(--text)}
+  .modtab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .modtab .mt-badge{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:1px}
+  .mt-pos{background:#2f5cff}.mt-crm{background:#0d9488}.mt-adm{background:#7c3aed}
+
+  /* ---------- Pager ---------- */
+  .pager{display:flex;gap:9px;flex-wrap:wrap;margin-top:26px;padding-top:22px;border-top:1px solid var(--border)}
+  .pager-link{
+    display:inline-flex;align-items:center;gap:7px;text-decoration:none;
+    padding:9px 15px;border-radius:9px;background:var(--surface);
+    border:1px solid var(--border);color:var(--text-muted);
+    font-size:13.5px;font-weight:600;transition:background .15s,color .15s
+  }
+  .pager-link:hover{background:var(--surface-2);color:var(--text)}
+  .pager-spacer{flex:1 1 0}
+  .crumb{font-size:12.5px;color:var(--text-faint);margin:0 0 14px}
+  .crumb a{color:var(--text-muted)}
+</style>
+</head>
+<body>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">IM</div>
+      <div class="brand-text">
+        <strong>Imoview</strong>
+        <span>Levantamento de módulos</span>
+      </div>
+    </div>
+
+    
+    <div class="modtabs">
+      <a class="modtab" href="pos.html"><span class="mt-badge mt-pos"></span>PÓS</a>
+      <a class="modtab active" href="crm.html"><span class="mt-badge mt-crm"></span>CRM</a>
+      <a class="modtab" href="adm.html"><span class="mt-badge mt-adm"></span>ADM</a>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2"/>
+        </svg>
+        <input id="search" type="search" placeholder="Buscar no levantamento…" autocomplete="off">
+        <button class="search-clear" id="searchClear" aria-label="Limpar busca">&times;</button>
+      </div>
+      <div class="search-meta" id="searchMeta"></div>
+    </div>
+
+    
+    <nav class="nav" id="nav">
+      <details data-module="crm">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:15px;height:15px"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0M16 11.2a2.8 2.8 0 1 0 0-5.6M17.5 20a5.4 5.4 0 0 0-1.6-3.9"/></svg>
+          CRM
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </summary>
+        <ul class="nav-tree">
+          <li><a href="#crm-imoveis">Imóveis</a>
+            <ul class="children">
+              <li><a class="sub" href="#crm-imoveis-inclusao">Inclusão</a></li>
+            </ul>
+          </li>
+          <li><a href="#crm-atendimento">Atendimento</a>
+            <ul class="children">
+              <li><a class="sub" href="#crm-atendimento-criando">Criando um Atendimento</a></li>
+            </ul>
+          </li>
+          <li><a href="#crm-cliente">Cliente</a>
+            <ul class="children">
+              <li><a class="sub" href="#crm-cliente-inclusao">Inclusão</a></li>
+            </ul>
+          </li>
+          <li><a href="#crm-configuracoes">Configurações</a>
+            <ul class="children">
+              <li><a class="sub" href="#avaliacao">Avaliação do imóvel</a></li>
+              <li><a class="sub" href="#atualizacao">Atualização do imóvel</a></li>
+              <li><a class="sub" href="#lancamento">Atualização do lançamento</a></li>
+              <li><a class="sub" href="#interacao">Interação do atendimento</a></li>
+              <li><a class="sub" href="#primeira-resposta">Primeira resposta</a></li>
+              <li><a class="sub" href="#repique">Repique</a></li>
+            </ul>
+          </li>
+        </ul>
+      </details>
+      <div class="nav-empty" id="navEmpty" style="display:none">Nenhum resultado encontrado.</div>
+    </nav>
+  </aside>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <div class="topbar">
+      <button class="icon-btn" id="menuBtn" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="title">Imoview — Módulos</div>
+      <button class="icon-btn hide-desktop" id="themeBtn" aria-label="Alternar tema" style="margin-left:auto">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="themeIcon"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>
+      </button>
+    </div>
+
+    
+    <main class="content">
+      <div class="inner">
+
+        <header class="page-head">
+          <p class="crumb"><a href="parametros.html">M&oacute;dulos</a> &rsaquo; CRM</p>
+          <span class="eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:12px;height:12px"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            Especificação funcional
+          </span>
+          <h1>CRM</h1>
+          <p>Relacionamento com o cliente · Imóveis e atendimento</p>
+          <div class="stats">
+            <div class="stat"><b>4</b><span>Seções</span></div>
+            <div class="stat"><b>20</b><span>Subseções</span></div>
+            <div class="stat"><b>35</b><span>Campos</span></div>
+          </div>
+        </header>
+
+        <section class="module" id="crm" data-section>
+          <div class="module-head">
+            <div class="module-badge m-crm">CRM</div>
+            <div>
+              <h2>CRM</h2>
+              <p class="sub">Relacionamento com o cliente · Imóveis e atendimento</p>
+            </div>
+          </div>
+          <div class="module-body">
+
+            <div class="unit" id="crm-imoveis" data-unit>
+              <h3>Imóveis <a class="anchor" href="#crm-imoveis">#</a></h3>
+              <h4 id="crm-imoveis-inclusao">Inclusão</h4>
+              <p>Na aba <b>Imóveis</b>, teremos o botão <span class="tag">Incluir registro</span>, com 2 opções: <b>Novo imóvel</b> ou <b>Novo lançamento</b>.</p>
+
+              <h4>Objetivo: Inclusão de Imóvel (Imoview)</h4>
+              <p class="lead">O módulo de Inclusão de Imóvel permite o cadastramento de novas oportunidades no sistema. O processo é estruturado através de um assistente sequencial (stepper) dividido em 4 etapas para garantir que todas as informações contratuais, técnicas e de divulgação sejam registradas com precisão.</p>
+
+              <h4>Modal Inicial: "Incluir Registro"</h4>
+              <p>Ao clicar em incluir, o sistema apresenta duas modalidades de cadastro:</p>
+              <ul class="bullets">
+                <li><b>Novo Imóvel:</b> Cadastro individual de imóveis prontos (casas, apartamentos, terrenos, salas comerciais, etc.) voltados para venda ou locação imediata.</li>
+                <li><b>Novo Lançamento:</b> Cadastro de empreendimentos na planta ou em construção. Permite estruturar o projeto principal (fotos do decorado, área de lazer comum, construtora) e posteriormente vincular as múltiplas unidades/tipologias comercializadas.</li>
+              </ul>
+
+              <h4>Detalhamento das Etapas de Cadastro ("Novo Imóvel")</h4>
+              <div class="flow">
+                <span class="flow-step">1. Endereço</span>
+                <span class="arrow">→</span>
+                <span class="flow-step">2. Detalhes</span>
+                <span class="arrow">→</span>
+                <span class="flow-step">3. Relacionamentos</span>
+                <span class="arrow">→</span>
+                <span class="flow-step">4. Anotação</span>
+              </div>
+
+              <h4>Etapa 1: Endereço</h4>
+              <p>Primeira fase do cadastro, destinada à localização e categorização inicial da captação.</p>
+              <p><b>Campos Obrigatórios:</b></p>
+              <ul class="bullets">
+                <li>Endereço (Rua/Avenida)</li>
+                <li>Número</li>
+                <li>Bairro</li>
+                <li>Finalidade (ex: Locação, Venda, Venda/Locação)</li>
+                <li>Tipo de Imóvel (ex: Apartamento, Casa, Terreno)</li>
+              </ul>
+              <p><b>Fluxo:</b> Após preencher os campos obrigatórios e avançar, o sistema valida a localização e habilita a etapa de Detalhes.</p>
+
+              <h4>Etapa 2: Detalhes</h4>
+              <p>Fase de preenchimento das especificações técnicas, financeiras e estruturais do imóvel, dividida nas seguintes seções:</p>
+              <ul class="bullets">
+                <li><b>A. Dados Principais:</b> Código do imóvel, condomínio/edifício, descrições para o site e portais, informações sobre chaves e placas.</li>
+                <li><b>B. Valores:</b> Valor de venda ou locação, condomínio, IPTU (mensal/anual), taxas operacionais e observações de negociação.</li>
+                <li><b>C. Áreas | Dimensões | Zoneamento:</b> Metragem privativa, área total, área do terreno, dimensões (frente/fundo/laterais) e zoneamento urbano.</li>
+                <li><b>D. Cartório:</b> Nome do Cartório de Registro de Imóveis, número da matrícula, inscrição municipal (IPTU) e averbações.</li>
+                <li><b>E. Características Internas:</b> Quantidade de dormitórios, suítes, banheiros, vagas, andares e checklist de itens internos (ar-condicionado, armários, varanda gourmet, etc.).</li>
+                <li><b>F. Características Externas:</b> Infraestrutura do condomínio e lazer (portaria 24h, elevador, piscina, academia, salão de festas, etc.).</li>
+              </ul>
+
+              <h4>Etapa 3: Relacionamentos</h4>
+              <p>Fase destinada à vinculação dos responsáveis pelo imóvel e às regras de publicação digital.</p>
+              <p><b>1. Vinculação de Pessoas:</b></p>
+              <ul class="bullets">
+                <li><b>Unidade / Filial:</b> Seleção da filial imobiliária responsável pela captação.</li>
+                <li><b>Proprietário:</b> Busca por nome/CPF/CNPJ para vinculação do proprietário e seu respectivo percentual de posse (permite múltiplos proprietários).</li>
+                <li><b>Captador:</b> Seleção do corretor/agenciador responsável pela captação do imóvel, com definição do percentual de comissão de captação e campo para indicação.</li>
+              </ul>
+              <p><b>2. Site e Portais de Anúncio:</b></p>
+              <ul class="bullets">
+                <li><b>Site Próprio:</b> Ativação da exibição do imóvel no site da imobiliária, definição de status de publicação (Liberada/Bloqueada) e nível de destaque (Simples, Destaque, Super Destaque).</li>
+                <li><b>Portais Pagos (Integrações):</b> Chaves de ativação individual e seleção do tipo de anúncio para portais integrados (ex: OLX / ZAP / Viva Real, Chaves na Mão, Imovelweb).</li>
+              </ul>
+
+              <h4>Etapa 4: Anotação</h4>
+              <p>Etapa final reservada exclusivamente para registos internos do imóvel.</p>
+              <p><b>Anotações Internas:</b> Campo livre de texto para inserir observações e notas internas da imobiliária (como dados de acesso, horários autorizados de visitação, particularidades do proprietário ou históricos de atendimento) que não ficam visíveis publicamente nos anúncios.</p>
+            </div>
+
+            <div class="unit" id="crm-atendimento" data-unit>
+              <h3>Atendimento <a class="anchor" href="#crm-atendimento">#</a></h3>
+
+              <h4 id="crm-atendimento-criando">Criando um Atendimento</h4>
+
+              <p class="lead">Na aba <b>Atendimento</b>, teremos o botão <span class="tag">Incluir atendimento</span>, com 2 opções: <b>Novo atendimento</b> ou <b>Novo pré-atendimento</b>. Depois disso, teremos 3 campos:</p>
+              <ul class="fields">
+                <li><span class="f-name">Lead</span><span class="f-opts">Nome, e-mail ou telefone</span></li>
+                <li><span class="f-name">Interesse</span><span class="f-opts">Venda ou Aluguel</span></li>
+                <li><span class="f-name">Unidade</span><span class="f-opts">Filial</span></li>
+              </ul>
+
+              <p>Após isso, seremos redirecionados para a aba de informações do atendimento, com os campos abaixo.</p>
+              <ul class="fields">
+                <li><span class="f-name">Pesquisa Imóveis</span><span class="f-opts">Endereço do imóvel, código do imóvel ou código auxiliar</span></li>
+                <li><span class="f-name">Lista Imóveis</span><span class="f-opts">Preenchido pelo campo de pesquisa. <b>Caso o cliente já tenha um imóvel em mente ou tenha visto algum no site</b>, é possível filtrar; caso ele não tenha, não será necessário, pois podemos adaptar o perfil do cliente para um imóvel</span></li>
+                <li><span class="f-name">Tipo atendimento</span><span class="f-opts">Online · plantão · presencial · telefônico</span></li>
+                <li><span class="f-name">Mídia de origem</span><span class="f-opts">Qual mídia o cliente utilizou para chegar na imobiliária?</span></li>
+                <li><span class="f-name">Corretores</span><span class="f-opts">Usuário que entrou em contato com o cliente</span></li>
+                <li><span class="f-name">Interação inicial</span><span class="f-opts">Descreve o que o cliente está em busca. Ex.: “O cliente está em busca de um apartamento de 2 quartos, uma cozinha.”</span></li>
+              </ul>
+              <p>Após os dados preenchidos, clicamos em <span class="tag">Criar atendimento</span>.</p>
+
+              <h4>Painel do atendimento e Perfil</h4>
+              <p>Seremos redirecionados para o painel de atendimento desse cliente. Podemos alterar os dados do cliente nesta própria aba clicando no ícone <b>Caneta</b>, editando o Lead. Caso o Perfil do cliente não tenha um imóvel, podemos atribuir tudo o que o cliente está buscando, indo na sessão <b>Perfil</b>. Após isso, clicamos novamente no ícone <b>Caneta</b> para fazer a edição nos campos: Tipo de imóvel, Quartos e etc.</p>
+
+              <h4>Imóveis encontrados</h4>
+              <p>Após isso serão filtrados os imóveis que se encaixam nesse Perfil do cliente. Na aba <b>Imóveis encontrados</b>, podemos atribuir os imóveis que o cliente gostar clicando na caixa de seleção do imóvel e depois em <b>Ações em lote</b>, para selecionar as opções: “Comparar imóveis” ou “Adicionar ao carrinho”. Também é possível selecionar individualmente no imóvel, clicando em <b>Ações</b> e <b>Adicionar ao carrinho</b>.</p>
+
+              <h4>Carrinho</h4>
+              <p>Iremos acessar a aba <b>Carrinho</b> para continuar o atendimento ao cliente. Podemos selecionar os imóveis que estão no carrinho desse cliente e executar as seguintes ações:</p>
+              <ul class="bullets">
+                <li>Comparar imóveis</li>
+                <li>Enviar por e-mail</li>
+                <li>Enviar via WhatsApp</li>
+                <li>Gerar visitas</li>
+                <li>Agendar empréstimos de chaves</li>
+                <li>Remover do carrinho</li>
+              </ul>
+
+              <h4>Visita e agendamento</h4>
+              <p>Na opção <b>gerar visitas</b>, quando clicamos irá incluir a visita automaticamente na Agenda do usuário. Caso queira definir uma data e um horário, vamos até o imóvel, clicamos em <b>Ações</b> e depois em <b>Agendar visita</b>. Com isso aparecerá a tela com as informações: a data com os dias, os horários disponíveis, o corretor selecionado e o imóvel selecionado.</p>
+              <p>Após o preenchimento dos campos, clicamos em <span class="tag">Gerar agendamento de visita</span> ou em <span class="tag">Fechar</span>.</p>
+              <p class="lead">Na opção <b>Agendar empréstimos de chaves</b> teremos 2 telas: <b>Dados da visita</b> e <b>Dados do agendamento</b>. Na tela da visita, selecionamos a data e o horário e clicamos em <span class="tag">Próximo</span>. Na tela de agendamento teremos os campos:</p>
+              <ul class="fields">
+                <li><span class="f-name">Prazo de devolução</span><span class="f-opts">Definido em horas</span></li>
+                <li><span class="f-name">Situação</span><span class="f-opts">Agendamento · na rua · virtual</span></li>
+                <li><span class="f-name">CPF</span><span class="f-opts">—</span></li>
+                <li><span class="f-name">Nome do cliente</span><span class="f-opts">—</span></li>
+                <li><span class="f-name">E-mail do cliente</span><span class="f-opts">—</span></li>
+                <li><span class="f-name">Tipo / número do documento</span><span class="f-opts">Com data de emissão</span></li>
+                <li><span class="f-name">Tipo / número telefone</span><span class="f-opts">—</span></li>
+                <li><span class="f-name">Tipo endereço</span><span class="f-opts">CEP · endereço · número · complemento · bairro</span></li>
+                <li><span class="f-name">Cidade / Estado</span><span class="f-opts">—</span></li>
+              </ul>
+              <p>Após o preenchimento dos dados, clicamos em <span class="tag">Gerar empréstimos de chaves</span>.</p>
+
+              <h4>Parecer da visita</h4>
+              <p>Após o agendamento da visita, acessamos a aba <b>Visita</b>, iremos até a visita agendada e clicamos no botão <b>Ações</b>. Logo após irá aparecer as opções: <b>Gerar parecer</b>, <b>Gerar proposta</b>, <b>Imprimir ficha</b>, <b>Alterar visita</b> ou <b>Remover visita</b>.</p>
+              <p>Na opção <b>gerar parecer</b>, ao clicar, aparecerão as opções de se o cliente <b>Gostou</b> ou <b>Não gostou</b>:</p>
+              <ul class="bullets">
+                <li><b>Se gostou:</b> teremos o motivo para inserir, com as opções: Mas quer ver outras opções · quer visitar o imóvel novamente · vai fazer proposta.</li>
+                <li><b>Se não gostou:</b> teremos o motivo para inserir também, com as opções: Achou caro · garagem · imóvel antigo · imóvel precisa de reforma · localização · tamanho ou vizinhança.</li>
+              </ul>
+              <p>Após isso teremos a <b>Descrição</b>, o motivo de ele (a) ter gostado ou não. Após a finalização do parecer, clicamos em <span class="tag">Salvar</span>.</p>
+
+              <h4>Proposta</h4>
+              <p>Caso o cliente gostar do imóvel, teremos que fazer o lançamento da proposta, clicando na opção <b>gerar proposta</b> e preenchendo os campos <b>Valor negociação</b> e <b>descrição</b>. Após isso clicamos em <span class="tag">Gerar proposta</span>.</p>
+              <p>Após isso acessaremos a aba <b>Proposta</b>, para verificar as propostas pendentes. Neste menu teremos o botão <b>Ações</b>, com as opções:</p>
+              <ul class="bullets">
+                <li>Gerar interação de proposta</li>
+                <li>Cotar seguro fiança</li>
+                <li>Gerar negócio e fechar atendimento</li>
+                <li>Gerar reserva do imóvel</li>
+                <li>Cancelar proposta</li>
+              </ul>
+              <p>Na opção <b>gerar interação de proposta</b>, temos os campos: Valor negociação e descrição negociação. Após preenchidos, clicamos em <span class="tag">Gerar negociação</span>.</p>
+              <p>Também podemos <b>cancelar a proposta</b> caso haja desistência do cliente, acessando a opção <b>cancelar proposta</b>.</p>
+              <p>Podemos <b>reservar o imóvel</b> para o cliente, acessando a opção <b>gerar reserva do imóvel</b>, preenchendo os campos: <b>Data fim</b> e o <b>motivo da reserva</b>.</p>
+              <div class="note">
+                A reserva não impede que outro corretor abra o atendimento, realize um empréstimo de chaves ou uma visita. Mas, em hipótese alguma, o corretor conseguirá finalizar a locação ou venda do imóvel, pois ele está reservado para esse atendimento.
+              </div>
+
+              <h4>Gerar negócio e fechar atendimento</h4>
+              <p>Para vender ou locar o imóvel para o cliente, acessamos a opção <b>gerar negócio e fechar atendimento</b> e preenchemos os dados do imóvel nos campos:</p>
+              <ul class="fields">
+                <li><span class="f-name">Data do negócio</span><span class="f-opts">—</span></li>
+                <li><span class="f-name">Taxa de administração</span><span class="f-opts">Com o respectivo valor da taxa de administração</span></li>
+                <li><span class="f-name">Código auxiliar</span><span class="f-opts">—</span></li>
+                <li><span class="f-name">Taxa de intermediação</span><span class="f-opts">Com o respectivo valor da taxa de intermediação</span></li>
+                <li><span class="f-name">Garantia locatícia</span><span class="f-opts">Caução · Credpago · Fiador · Fiança empresarial · Outros · Seguro fiança · Sem garantia · Título capitalização</span></li>
+              </ul>
+              <p>Caso seja selecionada a opção <b>Fiador</b>, teremos que adicionar o(s) fiador(es). Após isso, clicamos em <span class="tag">Próximo</span>.</p>
+
+              <h4>Dados do locatário</h4>
+              <p>Iremos para a opção dos dados do locatário, que terá os campos:</p>
+              <ul class="fields">
+                <li><span class="f-name">CPF</span><span class="f-opts">—</span></li>
+                <li><span class="f-name">Nome da pessoa</span><span class="f-opts">—</span></li>
+                <li><span class="f-name">Sexo</span><span class="f-opts">—</span></li>
+                <li><span class="f-name">Estado civil</span><span class="f-opts">—</span></li>
+                <li><span class="f-name">E-mail</span><span class="f-opts">Tipo e-mail + endereço de e-mail</span></li>
+                <li><span class="f-name">Telefone</span><span class="f-opts">Tipo + número, com opção de incluir um segundo telefone</span></li>
+                <li><span class="f-name">Documento</span><span class="f-opts">Tipo (RG, CNH…) + número + data de nascimento</span></li>
+                <li><span class="f-name">Endereço</span><span class="f-opts">Tipo · CEP · endereço · número · complemento · bairro</span></li>
+                <li><span class="f-name">Cidade – Estado</span><span class="f-opts">—</span></li>
+              </ul>
+
+              <h4>Rateio de comissões</h4>
+              <p>Após a conclusão desta etapa, seremos direcionados para o rateio de comissões, para preencher os dados:</p>
+              <ul class="fields">
+                <li><span class="f-name">Forma de comissão</span><span class="f-opts">Sobre a taxa de administração · sobre a taxa de intermediação · sobre o valor do negócio</span></li>
+                <li><span class="f-name">Nome do usuário</span><span class="f-opts">Ex.: João Pedro</span></li>
+                <li><span class="f-name">Tipo</span><span class="f-opts">Ex.: Captação</span></li>
+              </ul>
+              <div class="note">
+                <b>Lacuna no levantamento:</b> a lista de tipos disponíveis no rateio de comissões está truncada no documento original.
+              </div>
+
+              <h4>Interações</h4>
+              <p>Cada alteração nova no atendimento deverá ser atribuída em <b>Interações</b>. Comente o que foi trabalhado no campo <b>Nova interação</b> e insira clicando no botão <span class="tag">Nova interação</span>.</p>
+            </div>
+
+            <div class="unit" id="crm-cliente" data-unit>
+              <h3>Cliente <a class="anchor" href="#crm-cliente">#</a></h3>
+
+              <h4 id="crm-cliente-inclusao">Inclusão</h4>
+              <p>Na aba <b>Cliente</b>, teremos o botão <span class="tag">Incluir cliente</span>, com 2 opções: <b>Nova pessoa</b> ou <b>Nova empresa</b>.</p>
+              <p>Clicando em <b>Nova pessoa</b>, você deve digitar os dados corretamente:</p>
+              <ul class="bullets">
+                <li><b>CPF</b></li>
+              </ul>
+              <p>Depois seremos direcionados para a aba <b>Dados</b>, e deve ser preenchido os dados corretamente, sem faltar nenhum dado. O passo a passo é o seguinte:</p>
+
+              <h4>1. Dados pessoais</h4>
+              <p>Devemos incluir:</p>
+              <ul class="bullets">
+                <li>Nome da pessoa</li>
+                <li>Sexo</li>
+                <li>Data de nascimento</li>
+                <li>Estado civil</li>
+                <li>Nacionalidade</li>
+              </ul>
+
+              <h4>2. Documentos</h4>
+              <p>Podemos selecionar os tipos como <b>RG</b>, <b>CNH</b>, <b>CPF</b> ou incluir um tipo; além do <b>número do documento</b> e da <b>data de emissão</b>.</p>
+
+              <h4>3. Família</h4>
+              <p>Devemos inserir o cônjuge <b>caso a pessoa seja casada</b>, inserindo pelo código ou nome.</p>
+
+              <h4>4. Complementos</h4>
+              <p>Após isso podemos complementar com anotações e, o essencial: se a pessoa for fiador, <b>incluir os bens móveis e imóveis</b>.</p>
+
+              <h4>5. Endereço e contato</h4>
+              <p>Temos que inserir o endereço onde a pessoa mora, número de telefone e e-mail. <b>Todos os campos são essenciais!</b></p>
+
+              <h4>6. Dados financeiros</h4>
+              <p>Por último, inserir os dados financeiros como:</p>
+              <ul class="bullets">
+                <li>Profissão</li>
+                <li>Cargo</li>
+                <li>Renda mensal</li>
+              </ul>
+            </div>
+
+            <!-- ======================= CONFIGURACOES / PARAMETROS ======================= -->
+
+            <div class="unit" id="crm-configuracoes" data-unit>
+              <h3>Configurações <a class="anchor" href="#crm-configuracoes">#</a></h3>
+              <h4 id="crm-parametros">Parâmetros</h4>
+              <p class="lead">Documentação dos parâmetros relacionados à avaliação de imóveis, atualização de imóveis, interação com leads e distribuição de atendimentos.</p>
+            </div>
+            <!-- =========================
+                 AVALIAÇÃO
+            ========================= -->
+
+            <section
+              class="unit"
+              id="avaliacao"
+              data-unit
+            >
+
+              <h3>
+                Avaliação imóvel — Aluguel ou Venda
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Faixas de avaliação
+                  </strong>
+
+                  <span class="status ok">
+                    Compreendido
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  <p>
+                    Serve para classificar uma avaliação de imóvel em
+                    diferentes faixas de percentual, conforme a diferença
+                    entre o valor considerado como referência e o valor
+                    apresentado na avaliação.
+                  </p>
+
+                  <p>
+                    O sistema permite configurar faixas para os níveis:
+                    <b>Verde</b>, <b>Amarelo</b> e <b>Vermelho</b>.
+                  </p>
+
+                </div>
+
+
+                <div class="parameter-example">
+
+                  <strong>Exemplo:</strong>
+
+                  <br><br>
+
+                  Valor de referência do aluguel:
+                  <b>R$ 2.000,00</b>
+
+                  <br>
+
+                  Valor resultante da avaliação:
+                  <b>R$ 2.200,00</b>
+
+                  <br><br>
+
+                  Diferença:
+                  <b>R$ 200,00</b>
+
+                  <br>
+
+                  Percentual:
+                  <b>10%</b>
+
+                </div>
+
+              </div>
+
+
+              <h4>Configuração</h4>
+
+              <table>
+
+                <thead>
+                  <tr>
+                    <th>Classificação</th>
+                    <th>De</th>
+                    <th>Até</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  <tr>
+                    <td>Verde</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Amarelo</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Vermelho</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </section>
+
+
+            <!-- =========================
+                 ATUALIZAÇÃO IMÓVEL
+            ========================= -->
+
+            <section
+              class="unit"
+              id="atualizacao"
+              data-unit
+            >
+
+              <h3>
+                Atualização imóvel — Aluguel ou Venda
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Tempo desde a última atualização
+                  </strong>
+
+                  <span class="status ok">
+                    Compreendido
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  Define a classificação do imóvel de acordo com a
+                  quantidade de <b>dias desde a última atualização das
+                  informações do imóvel</b>.
+
+                  <br><br>
+
+                  O parâmetro utiliza as faixas:
+
+                  <b>Verde</b>,
+                  <b>Amarelo</b> e
+                  <b>Vermelho</b>.
+
+                </div>
+
+              </div>
+
+
+              <h4>Exemplo de funcionamento</h4>
+
+              <div class="flow">
+
+                <span class="flow-step">
+                  Última atualização
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Contagem de dias
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Classificação
+                </span>
+
+              </div>
+
+              <p class="lead">
+                Quanto maior o tempo desde a atualização do imóvel,
+                maior poderá ser a necessidade de revisão das informações,
+                conforme as faixas configuradas pela imobiliária.
+              </p>
+
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Classificação</th>
+                    <th>De</th>
+                    <th>Até</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <tr>
+                    <td>Verde</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Amarelo</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Vermelho</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </section>
+
+
+            <!-- =========================
+                 LANÇAMENTO
+            ========================= -->
+
+            <section
+              class="unit"
+              id="lancamento"
+              data-unit
+            >
+
+              <h3>
+                Atualização lançamento — dias
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Atualização de lançamento
+                  </strong>
+
+                  <span class="status pending">
+                    Pendente
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  <p>
+                    Este parâmetro aparece configurado em dias e possui
+                    faixas de classificação semelhantes às utilizadas
+                    para atualização de imóveis.
+                  </p>
+
+                  <p>
+                    Porém, no levantamento atual, ainda não foi identificado
+                    exatamente <b>qual informação do lançamento é utilizada
+                    para iniciar a contagem dos dias</b>.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="note">
+
+                <b>Ponto a validar:</b>
+
+                Não foi possível determinar se a contagem considera a
+                última atualização do lançamento, alteração de alguma
+                informação específica, atualização de estoque,
+                disponibilidade ou outro evento do cadastro.
+
+              </div>
+
+            </section>
+
+
+            <!-- =========================
+                 INTERAÇÃO
+            ========================= -->
+
+            <section
+              class="unit"
+              id="interacao"
+              data-unit
+            >
+
+              <h3>
+                Interação atendimento — Aluguel ou Venda
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Tempo da interação do lead
+                  </strong>
+
+                  <span class="status ok">
+                    Compreendido
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  Define o tempo relacionado às interações realizadas
+                  no atendimento do lead.
+
+                  <br><br>
+
+                  O parâmetro possui faixas em <b>dias</b> e permite
+                  classificar o atendimento conforme o tempo de interação.
+
+                </div>
+
+              </div>
+
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Classificação</th>
+                    <th>De</th>
+                    <th>Até</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <tr>
+                    <td>Verde</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Amarelo</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                  <tr>
+                    <td>Vermelho</td>
+                    <td>A definir</td>
+                    <td>A definir</td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </section>
+
+
+            <!-- =========================
+                 PRIMEIRA RESPOSTA
+            ========================= -->
+
+            <section
+              class="unit"
+              id="primeira-resposta"
+              data-unit
+            >
+
+              <h3>
+                Tempo de primeira resposta — Aluguel ou Venda
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Tempo do atendente no lead
+                  </strong>
+
+                  <span class="status ok">
+                    Compreendido
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  <p>
+                    Define o tempo máximo esperado para que o atendente
+                    realize a <b>primeira interação com o lead</b>.
+                  </p>
+
+                  <p>
+                    A unidade utilizada é <b>minutos</b>.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="flow">
+
+                <span class="flow-step">
+                  Lead recebido
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Contagem do tempo
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Primeira interação
+                </span>
+
+              </div>
+
+              <div class="note">
+
+                <b>Importante:</b>
+
+                Esse parâmetro está relacionado ao tempo até o
+                primeiro contato/interação do atendente com o lead,
+                e não necessariamente ao tempo total de atendimento.
+
+              </div>
+
+            </section>
+
+
+            <!-- =========================
+                 REPIQUE
+            ========================= -->
+
+            <section
+              class="unit"
+              id="repique"
+              data-unit
+            >
+
+              <h3>
+                Repique
+              </h3>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Transferência automática de atendimento
+                  </strong>
+
+                  <span class="status ok">
+                    Funcionamento geral compreendido
+                  </span>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  <p>
+                    O repique é utilizado para transferir automaticamente
+                    um atendimento para outro corretor quando não houver
+                    interação com o lead dentro do tempo configurado.
+                  </p>
+
+                  <p>
+                    A regra considera a ausência de um
+                    <b>primeiro contato</b>, seja por interação ou
+                    atividade registrada no atendimento.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <h4>Funcionamento básico</h4>
+
+              <div class="flow">
+
+                <span class="flow-step">
+                  Lead recebido
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Corretor recebe
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Sem interação
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Tempo limite
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-step">
+                  Repique
+                </span>
+
+              </div>
+
+
+              <h4>Exemplo</h4>
+
+              <p>
+                Se o repique estiver configurado para
+                <b>30 minutos</b> e o corretor receber um lead às
+                <b>10:00</b>, caso não seja registrada a primeira
+                interação dentro do período configurado, o sistema
+                poderá realizar o repique para outro corretor elegível.
+              </p>
+
+
+              <h4>Se houver apenas um corretor disponível</h4>
+
+              <div class="note">
+
+                <b>Ponto a validar no sistema:</b>
+
+                Ainda não foi identificado no levantamento qual é o
+                comportamento do Imoview quando existe apenas um corretor
+                elegível/disponível para receber o atendimento.
+
+                <br><br>
+
+                É necessário verificar se, nesse cenário, o sistema:
+
+                <br><br>
+
+                • mantém o atendimento com o mesmo corretor;
+
+                <br>
+
+                • transfere para uma fila/piscina de leads;
+
+                <br>
+
+                • mantém o atendimento sem transferência;
+
+                <br>
+
+                • ou utiliza alguma outra regra de distribuição.
+
+              </div>
+
+
+              <h4>Modos de funcionamento</h4>
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Modo</th>
+                    <th>Funcionamento</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <tr>
+
+                    <td>
+                      <b>Desabilitado</b>
+                    </td>
+
+                    <td>
+                      O repique não é utilizado.
+                    </td>
+
+                  </tr>
+
+                  <tr>
+
+                    <td>
+                      <b>Automático</b>
+                    </td>
+
+                    <td>
+                      Os atendimentos são distribuídos automaticamente
+                      conforme as regras e tempos configurados.
+                    </td>
+
+                  </tr>
+
+                  <tr>
+
+                    <td>
+                      <b>Manual</b>
+                    </td>
+
+                    <td>
+                      O atendimento fica disponível no painel/piscina
+                      para que o corretor faça a atribuição manualmente.
+                    </td>
+
+                  </tr>
+
+                  <tr>
+
+                    <td>
+                      <b>Híbrido</b>
+                    </td>
+
+                    <td>
+                      O sistema realiza as distribuições automáticas
+                      até atingir a quantidade de repiques configurada.
+                      Depois disso, o atendimento fica disponível
+                      para atribuição manual.
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+
+              <h4>Parâmetros relacionados</h4>
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    N° de minutos úteis sem interação — Aluguel
+                  </strong>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  Quantidade de minutos úteis que o corretor possui
+                  para realizar a primeira interação antes que a regra
+                  de repique seja acionada.
+
+                </div>
+
+              </div>
+
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    N° de minutos úteis sem interação — Venda
+                  </strong>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  Quantidade de minutos úteis que o corretor possui
+                  para realizar a primeira interação em atendimentos
+                  de venda antes que a regra de repique seja acionada.
+
+                </div>
+
+              </div>
+
+
+              <div class="parameter">
+
+                <div class="parameter-title">
+
+                  <strong>
+                    Zerar contagem no dia seguinte
+                  </strong>
+
+                </div>
+
+                <div class="parameter-desc">
+
+                  Quando habilitado, caso o tempo restante ultrapasse
+                  o expediente configurado, a contagem é reiniciada
+                  no próximo dia de expediente, a partir do horário
+                  inicial configurado.
+
+                </div>
+
+              </div>
+
+
+              <div class="note">
+
+                <b>Observação do sistema:</b>
+
+                A configuração recomenda que o repique seja utilizado
+                com um período maior quando a imobiliária não possui
+                um setor de pré-atendimento, evitando transferências
+                excessivamente rápidas entre corretores.
+
+              </div>
+
+            </section>
+
+          </div>
+        </section>
+
+        <!-- ======================= ADM ======================= -->
+
+        <nav class="pager">
+          <a class="pager-link" href="pos.html">&larr; PÓS</a>
+          <a class="pager-link" href="parametros.html">Ver tudo</a>
+          <a class="pager-link" style="margin-left:auto" href="adm.html">ADM &rarr;</a>
+        </nav>
+
+        <footer class="foot">
+          M&oacute;dulo <b>CRM</b> &middot; p&aacute;gina gerada a partir de <b>db/Levantamento.docx</b>.<br>
+          Vis&atilde;o completa com os 3 m&oacute;dulos: <a href="parametros.html">parametros.html</a>.
+        </footer>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Theme ---------- */
+  var root = document.documentElement;
+  var stored = null;
+  try { stored = localStorage.getItem('imoview-theme'); } catch(e){}
+  if (stored) root.setAttribute('data-theme', stored);
+  else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) root.setAttribute('data-theme','dark');
+
+  var SUN = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/>';
+  var MOON = '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>';
+  function paintTheme(){
+    var d = root.getAttribute('data-theme') === 'dark';
+    var ic = document.getElementById('themeIcon');
+    if (ic) ic.innerHTML = d ? MOON : SUN;
+    var b = document.getElementById('themeBtn');
+    if (b) b.setAttribute('aria-label', d ? 'Ativar tema claro' : 'Ativar tema escuro');
+  }
+  function toggleTheme(){
+    var d = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', d ? 'light' : 'dark');
+    try { localStorage.setItem('imoview-theme', d ? 'light' : 'dark'); } catch(e){}
+    paintTheme();
+  }
+  paintTheme();
+  var themeBtn = document.getElementById('themeBtn');
+  if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+
+  /* ---------- Mobile drawer ---------- */
+  var sidebar = document.getElementById('sidebar');
+  var scrim = document.getElementById('scrim');
+  function closeDrawer(){ sidebar.classList.remove('open'); scrim.classList.remove('show'); }
+  var menuBtn = document.getElementById('menuBtn');
+  if (menuBtn) menuBtn.addEventListener('click', function(){
+    sidebar.classList.toggle('open');
+    scrim.classList.toggle('show', sidebar.classList.contains('open'));
+  });
+  if (scrim) scrim.addEventListener('click', closeDrawer);
+
+  /* ---------- Scrollspy ---------- */
+  var units = Array.prototype.slice.call(document.querySelectorAll('[data-unit]'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav a[href^="#"]'));
+  var byId = {};
+  links.forEach(function(a){ byId[a.getAttribute('href').slice(1)] = a; });
+
+  // every anchor the nav can point at, in document order
+  var targets = links.map(function(a){
+    var id = a.getAttribute('href').slice(1);
+    return { link:a, el:document.getElementById(id) };
+  }).filter(function(o){ return !!o.el; })
+    .sort(function(a,b){ return a.el.compareDocumentPosition(b.el) & 4 ? -1 : 1; });
+
+  function moduleOf(el){
+    var m = el.closest('[data-section]');
+    return m ? m.id : null;
+  }
+  function openModule(id){
+    var d = document.querySelector('details[data-module="' + id + '"]');
+    if (d) d.open = true;
+  }
+
+  var spyPending = false;
+  function spy(){
+    spyPending = false;
+    var visible = targets.filter(function(o){
+      var u = o.el.closest('[data-unit]');
+      return !(u && u.classList.contains('hidden-by-search'));
+    });
+    if (!visible.length) return;
+
+    var best = null;
+    for (var i = 0; i < visible.length; i++){
+      if (visible[i].el.getBoundingClientRect().top <= 140) best = visible[i];
+    }
+    if (!best) best = visible[0];               // above the first target
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 8){
+      best = visible[visible.length - 1];       // pinned to bottom of page
+    }
+
+    links.forEach(function(a){ a.classList.remove('active'); });
+    best.link.classList.add('active');
+    var mid = moduleOf(best.el);
+    if (mid) openModule(mid);
+  }
+  function requestSpy(){ if (!spyPending){ spyPending = true; requestAnimationFrame(spy); } }
+  window.addEventListener('scroll', requestSpy, {passive:true});
+  window.addEventListener('resize', requestSpy);
+
+  /* ---------- Accordion: single-open behaviour ---------- */
+  var detailsEls = Array.prototype.slice.call(document.querySelectorAll('#nav details'));
+  detailsEls.forEach(function(d){
+    d.addEventListener('toggle', function(){
+      if (!d.open) return;
+      detailsEls.forEach(function(o){ if (o !== d) o.open = false; });
+    });
+  });
+
+  /* ---------- Smooth scroll + close drawer ---------- */
+  links.forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href').slice(1);
+      var t = document.getElementById(id);
+      if (!t) return;
+      e.preventDefault();
+      closeDrawer();
+      var y = t.getBoundingClientRect().top + window.pageYOffset - 18;
+      window.scrollTo({ top:y, behavior:'smooth' });
+      try { try { history.replaceState(null, '', '#' + id); } catch (err) {} } catch (err) {}
+      requestSpy();
+    });
+  });
+
+  /* ---------- Search ---------- */
+  var input = document.getElementById('search');
+  var clearBtn = document.getElementById('searchClear');
+  var meta = document.getElementById('searchMeta');
+  var navEmpty = document.getElementById('navEmpty');
+
+  function norm(s){
+    return s.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  }
+
+  function clearMarks(scope){
+    var marks = scope.querySelectorAll('mark');
+    for (var i = marks.length - 1; i >= 0; i--){
+      var m = marks[i], p = m.parentNode;
+      p.replaceChild(document.createTextNode(m.textContent), m);
+      p.normalize();
+    }
+  }
+  function markIn(el, q){
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    var nodes = [], n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(function(tn){
+      if (!tn.nodeValue || tn.nodeValue.toLowerCase().indexOf(q) === -1) return;
+      if (tn.parentNode.closest('script,style')) return;
+      var frag = document.createDocumentFragment();
+      var text = tn.nodeValue, lower = text.toLowerCase(), i = 0, idx;
+      while ((idx = lower.indexOf(q, i)) !== -1){
+        if (idx > i) frag.appendChild(document.createTextNode(text.slice(i, idx)));
+        var mk = document.createElement('mark');
+        mk.textContent = text.slice(idx, idx + q.length);
+        frag.appendChild(mk);
+        i = idx + q.length;
+      }
+      if (i < text.length) frag.appendChild(document.createTextNode(text.slice(i)));
+      tn.parentNode.replaceChild(frag, tn);
+    });
+  }
+
+  function runSearch(raw){
+    var q = norm(raw.trim());
+    clearBtn.classList.toggle('show', raw.length > 0);
+
+    units.forEach(function(u){ clearMarks(u); });
+    links.forEach(function(a){ clearMarks(a); });
+
+    if (!q){
+      units.forEach(function(u){ u.classList.remove('hidden-by-search'); });
+      document.querySelectorAll('[data-section]').forEach(function(s){ s.classList.remove('hidden-by-search'); });
+      detailsEls.forEach(function(d){ d.classList.remove('hidden-by-search'); });
+      links.forEach(function(a){ a.classList.remove('hidden-by-search'); a.closest('li').classList.remove('hidden-by-search'); });
+      meta.textContent = '';
+      navEmpty.style.display = 'none';
+      requestSpy();
+      return;
+    }
+
+    var hits = 0;
+    units.forEach(function(u){
+      var ok = norm(u.textContent).indexOf(q) !== -1;
+      u.classList.toggle('hidden-by-search', !ok);
+      if (ok){ hits++; markIn(u, q); }
+    });
+
+    document.querySelectorAll('[data-section]').forEach(function(s){
+      var any = s.querySelectorAll('[data-unit]:not(.hidden-by-search)').length > 0;
+      s.classList.toggle('hidden-by-search', !any);
+    });
+    detailsEls.forEach(function(d){
+      var any = d.querySelectorAll('a:not(.hidden-by-search)').length > 0;
+      d.classList.toggle('hidden-by-search', !any);
+      if (any) d.open = true;
+    });
+    links.forEach(function(a){
+      var ok = norm(a.textContent).indexOf(q) !== -1;
+      a.classList.toggle('hidden-by-search', !ok);
+      a.closest('li').classList.toggle('hidden-by-search', !ok);
+      if (ok) markIn(a, q);
+    });
+
+    meta.textContent = hits === 0 ? 'Nada encontrado' : (hits + (hits === 1 ? ' seção encontrada' : ' seções encontradas'));
+    navEmpty.style.display = hits === 0 ? 'block' : 'none';
+    requestSpy();
+  }
+
+  var timer = null;
+  input.addEventListener('input', function(){
+    var v = input.value;
+    clearTimeout(timer);
+    timer = setTimeout(function(){ runSearch(v); }, 130);
+  });
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Escape'){ input.value = ''; runSearch(''); input.blur(); }
+  });
+  clearBtn.addEventListener('click', function(){ input.value = ''; runSearch(''); input.focus(); });
+
+  document.addEventListener('keydown', function(e){
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k'){ e.preventDefault(); input.focus(); input.select(); }
+  });
+
+  /* ---------- Init ---------- */
+  if (location.hash){
+    var t = document.getElementById(location.hash.slice(1));
+    if (t){
+      var m = moduleOf(t);
+      if (m) openModule(m);
+      setTimeout(function(){ window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - 18 }); }, 0);
+    }
+  }
+  requestSpy();
+})();
+</script>
+</body>
+</html>
